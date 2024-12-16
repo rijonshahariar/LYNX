@@ -1,12 +1,13 @@
-const RAPIDAPI_KEY = 'f743bf2041msh4894c15dcbdbbd6p1dc678jsn4bfff64d2a1d';
+const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY;
+const RAPIDAPI_HOST = import.meta.env.VITE_RAPIDAPI_HOST;
 
 async function getSubmission(tokenId) {
-  const url = `https://judge0-ce.p.rapidapi.com/submissions/${tokenId}?base64_encoded=true&fields=*`;
+  const url = `https://${RAPIDAPI_HOST}/submissions/${tokenId}?base64_encoded=true&fields=*`;
   const options = {
     method: "GET",
     headers: {
       "x-rapidapi-key": RAPIDAPI_KEY,
-      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+      "x-rapidapi-host": RAPIDAPI_HOST,
     },
   };
 
@@ -16,7 +17,7 @@ async function getSubmission(tokenId) {
 }
 
 export async function makeSubmission({ code, language, callback, stdin }) {
-  const url = 'https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false&fields=*';
+  const url = `https://${RAPIDAPI_HOST}/submissions?base64_encoded=true&wait=false&fields=*`;
   
   // Prepare the submission data
   const submissionData = {
@@ -30,7 +31,7 @@ export async function makeSubmission({ code, language, callback, stdin }) {
     method: 'POST',
     headers: {
       'x-rapidapi-key': RAPIDAPI_KEY,
-      'x-rapidapi-host': "judge0-ce.p.rapidapi.com",
+      'x-rapidapi-host': RAPIDAPI_HOST,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(submissionData)

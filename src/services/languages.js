@@ -1,5 +1,3 @@
-const RAPIDAPI_KEY = 'f743bf2041msh4894c15dcbdbbd6p1dc678jsn4bfff64d2a1d';
-
 // Define our supported languages with their IDs
 const SUPPORTED_LANGUAGES = [
   { id: 54, name: 'C++' },

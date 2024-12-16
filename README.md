@@ -1,10 +1,10 @@
 <div align="center">
-  <img src="public/lynx.png" alt="LYNX Code Editor" width="800"/>
+  <img src="public/lynx.png" alt="LYNX Code Editor" width="600"/>
 </div>
 
-# LYNX - AI Enhanced Code Editor
+# LYNX - Online Code Editor
 
-LYNX is a modern, feature-rich online code editor with AI capabilities, designed to make coding more efficient and enjoyable.
+LYNX is a modern, simple online code editor with AI analysis, designed to make coding more efficient and enjoyable.
 
 ## Features
 
@@ -13,17 +13,14 @@ LYNX is a modern, feature-rich online code editor with AI capabilities, designed
 
 - Syntax highlighting
 - Auto-completion
-- Multiple language support
-- Real-time error detection
-- Code formatting
+- Multiple language support (Python, JavaScript, C++, Java)
+- Time Tracking
 
 ### AI Analysis
 <img src="public/analysis.png" alt="AI Analysis" width="800"/>
 
-- Code complexity analysis
-- Performance insights
-- Best practices suggestions
-- Security checks
+- Time complexity analysis
+- Space complexity analysis
 
 ### Input/Output Console
 <img src="public/console.png" alt="Console" width="800"/>
@@ -32,14 +29,3 @@ LYNX is a modern, feature-rich online code editor with AI capabilities, designed
 - Real-time output
 - Error handling
 - Input testing
-
-## Supported Languages
-
-- Python
-- JavaScript
-- C++
-- Java
-
-## Getting Started
-
-1. Clone the repository

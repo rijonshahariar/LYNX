@@ -17,10 +17,26 @@ const formatTime = (seconds) => {
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
+const Footer = ({ isDark }) => (
+  <footer className={`py-2 mt-4 text-center text-sm ${isDark ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-600'} border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+    <p>
+      Developed by{' '}
+      <a 
+        href="https://github.com/rijonshahariar" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className={`font-medium hover:underline ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'}`}
+      >
+        Shahariar Rijon
+      </a>
+    </p>
+  </footer>
+);
+
 const IDE = () => {
   const fileInputRef = useRef(null);
   
-  // Helper function to get file extension
+  // Helper functions first
   const getFileExtension = (languageId) => {
     switch (languageId) {
       case '54': return 'cpp';
@@ -31,7 +47,6 @@ const IDE = () => {
     }
   };
 
-  // Helper function for language name
   const getLanguageName = (id) => {
     switch (id) {
       case '54': return 'cpp';
@@ -42,21 +57,25 @@ const IDE = () => {
     }
   };
 
-  const [fileName, setFileName] = useState(() => {
-    const savedLanguage = localStorage.getItem('selectedLanguage') || '92';
-    const extension = getFileExtension(savedLanguage);
-    return `main.${extension}`;
+  // Initialize language state first
+  const [language, setLanguage] = useState(() => {
+    const savedLanguage = localStorage.getItem('selectedLanguage');
+    return savedLanguage || '92'; // default to Python
   });
 
+  // Initialize fileName state
+  const [fileName, setFileName] = useState(() => {
+    const savedFileName = localStorage.getItem('fileName');
+    const savedLanguage = localStorage.getItem('selectedLanguage') || '92';
+    const extension = getFileExtension(savedLanguage);
+    return savedFileName || `main.${extension}`;
+  });
+
+  // Initialize other states
   const [code, setCode] = useState(() => {
     const savedCode = localStorage.getItem('savedCode');
     const savedLanguage = localStorage.getItem('selectedLanguage') || '92';
     return savedCode || boilerplateCode[getLanguageName(savedLanguage)];
-  });
-
-  const [language, setLanguage] = useState(() => {
-    const savedLanguage = localStorage.getItem('selectedLanguage');
-    return savedLanguage || '92'; // default to Python
   });
 
   const [input, setInput] = useState('');
@@ -64,6 +83,7 @@ const IDE = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState(null);
   const [isDark, setIsDark] = useState(true);
+  const [availableLanguages, setAvailableLanguages] = useState([]);
   
   // Timer states
   const [seconds, setSeconds] = useState(() => {
@@ -75,7 +95,10 @@ const IDE = () => {
   const [analysis, setAnalysis] = useState(null);
   const intervalRef = useRef(null);
 
-  const [availableLanguages, setAvailableLanguages] = useState([]);
+  // Effects
+  useEffect(() => {
+    localStorage.setItem('fileName', fileName);
+  }, [fileName]);
 
   // Fetch languages on component mount
   useEffect(() => {
@@ -134,15 +157,6 @@ const IDE = () => {
     }
   }, [language]);
 
-  // Update fileName when language changes
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('selectedLanguage');
-    if (savedLanguage && !fileName.includes('/')) { // Don't update if it's an uploaded file
-      const extension = getFileExtension(savedLanguage);
-      setFileName(`main.${extension}`);
-    }
-  }, [language]);
-
   const toggleTheme = () => {
     setIsDark(!isDark);
   };
@@ -160,10 +174,14 @@ const IDE = () => {
     localStorage.setItem('codeTimer', '0');
   };
 
+  // Handle file upload
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setFileName(file.name);
+      const newFileName = file.name;
+      setFileName(newFileName);
+      localStorage.setItem('fileName', newFileName);
+      
       const extension = file.name.split('.').pop().toLowerCase();
       switch (extension) {
         case 'py':
@@ -282,6 +300,7 @@ const IDE = () => {
     }
   };
 
+  // Handle language change
   const handleLanguageChange = (newLanguage) => {
     if (code && code !== boilerplateCode[newLanguage]) {
       const confirmChange = window.confirm(
@@ -290,13 +309,19 @@ const IDE = () => {
       if (!confirmChange) return;
     }
 
+    // Get current and new file extensions
+    const currentExtension = fileName.split('.').pop().toLowerCase();
+    const newExtension = getFileExtension(newLanguage);
+
+    // If extensions don't match, reset to default filename
+    if (currentExtension !== newExtension) {
+      const newFileName = `main.${newExtension}`;
+      setFileName(newFileName);
+      localStorage.setItem('fileName', newFileName);
+    }
+
     setLanguage(newLanguage);
     setCode(boilerplateCode[newLanguage]);
-    
-    // Update fileName based on new language
-    const extension = getFileExtension(newLanguage);
-    setFileName(`main.${extension}`);
-    
     localStorage.setItem('selectedLanguage', newLanguage);
   };
 
@@ -403,6 +428,9 @@ const IDE = () => {
         analysis={analysis}
         isDark={isDark}
       />
+
+      {/* Add Footer */}
+      {/* <Footer isDark={isDark} /> */}
     </div>
   );
 };

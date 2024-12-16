@@ -59,7 +59,7 @@ const InputOutput = ({ input, setInput, output, isError, isDark }) => {
         } shadow-sm`}>
           <AceEditor
             mode="text"
-            theme={isDark ? 'github_dark' : 'github'}
+            theme={isDark ? 'dracula' : 'github'}
             value={output}
             readOnly={true}
             name="output-editor"

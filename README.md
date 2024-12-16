@@ -1,8 +1,21 @@
-# React + Vite
+# WebCode - AI-Enhanced Online Code Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, lightweight online code editor with AI capabilities for quick coding and execution.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Code Execution**: Write and run code in Python, JavaScript, C++, and Java
+- **AI Analysis**: Get time and space complexity insights
+- **Smart Editor Features**:
+  - Syntax highlighting
+  - Language-specific templates
+  - Error detection
+  - Split-pane interface
+  
+- **User-Friendly Interface**:
+  - Dark/Light themes
+  - Resizable editor panels
+  - Code session timer
+  - Clean, minimal design
+
+[... rest of the description remains similar but removes IDE references ...]

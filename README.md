@@ -56,6 +56,10 @@ LYNX is a modern, simple online code editor with AI analysis, designed to make c
    npm run dev
    ```
 
-## Usage
+### Usage
 
-After installation, open your browser and navigate to `http://localhost:/3000` to access the TaskFlow application.
+After installation, open your browser and navigate to `http://localhost:5173/` to access the application.
+
+### License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

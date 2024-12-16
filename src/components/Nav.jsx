@@ -1,7 +1,43 @@
 import React from 'react';
 
 const Nav = ({ isDark, toggleTheme, language, setLanguage, onRun, isRunning, setCode, code, timer, availableLanguages }) => {
-  const { seconds, isTimerRunning, toggleTimer, resetTimer, handleAnalyzeCode, fileInputRef, handleFileChange, handleChooseFile } = timer;
+  const { seconds, isTimerRunning, toggleTimer, resetTimer, handleAnalyzeCode } = timer;
+
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((e) => {
+        console.error(`Error attempting to enable fullscreen: ${e.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  const handleDownload = () => {
+    const getExtension = (languageId) => {
+      switch (languageId) {
+        case '54': return 'cpp';
+        case '92': return 'py';
+        case '93': return 'js';
+        case '91': return 'java';
+        default: return 'txt';
+      }
+    };
+
+    const extension = getExtension(language);
+    const fileName = `main.${extension}`;
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
 
   return (
     <nav className={`${isDark ? 'bg-gray-800' : 'bg-white'} border-b ${isDark ? 'border-gray-700' : 'border-gray-200'} px-4 py-3`}>
@@ -53,21 +89,28 @@ const Nav = ({ isDark, toggleTheme, language, setLanguage, onRun, isRunning, set
 
           {/* Controls Section */}
           <div className="flex items-center space-x-2 overflow-x-auto whitespace-nowrap pb-2 lg:pb-0">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept=".py,.js,.cpp,.c,.h,.java"
-              className="hidden"
-            />
-            
-            <button
-              onClick={handleChooseFile}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium ${isDark ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50'}`}
+          <button
+              onClick={handleDownload}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 ${
+                isDark ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50'
+              }`}
+              title="Download file"
             >
-              Choose File
+              <svg 
+                className="w-4 h-4" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              Save File
             </button>
-
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
@@ -88,6 +131,8 @@ const Nav = ({ isDark, toggleTheme, language, setLanguage, onRun, isRunning, set
             >
               Analyze
             </button>
+
+           
 
             <button
               onClick={onRun}
@@ -110,6 +155,28 @@ const Nav = ({ isDark, toggleTheme, language, setLanguage, onRun, isRunning, set
                   <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
                 </svg>
               )}
+            </button>
+
+            <button
+              onClick={toggleFullScreen}
+              className={`p-2 rounded-md ${
+                isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+              }`}
+              title="Toggle fullscreen"
+            >
+              <svg 
+                className={`w-5 h-5 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" 
+                />
+              </svg>
             </button>
           </div>
         </div>

@@ -60,6 +60,9 @@ const IDE = () => {
 
   const [availableLanguages, setAvailableLanguages] = useState([]);
 
+  // Add new state for file name
+  const [fileName, setFileName] = useState('main.py'); // Default for Python
+
   // Fetch languages on component mount
   useEffect(() => {
     const getLanguages = async () => {
@@ -117,6 +120,25 @@ const IDE = () => {
     }
   }, [language]);
 
+  // Update fileName when language changes
+  useEffect(() => {
+    if (!fileName.startsWith('main.')) { // Don't update if user has uploaded a custom file
+      const extension = getFileExtension(language);
+      setFileName(`main.${extension}`);
+    }
+  }, [language]);
+
+  // Helper function to get file extension
+  const getFileExtension = (languageId) => {
+    switch (languageId) {
+      case '54': return 'cpp';
+      case '92': return 'py';
+      case '93': return 'js';
+      case '91': return 'java';
+      default: return 'py';
+    }
+  };
+
   const toggleTheme = () => {
     setIsDark(!isDark);
   };
@@ -137,21 +159,22 @@ const IDE = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      setFileName(file.name);
       const extension = file.name.split('.').pop().toLowerCase();
       switch (extension) {
         case 'py':
-          setLanguage('python');
+          setLanguage('92');  // Python
           break;
         case 'js':
-          setLanguage('javascript');
+          setLanguage('93');  // JavaScript
           break;
         case 'cpp':
         case 'c':
         case 'h':
-          setLanguage('cpp');
+          setLanguage('54');  // C++
           break;
         case 'java':
-          setLanguage('java');
+          setLanguage('91');  // Java
           break;
       }
 
@@ -265,6 +288,11 @@ const IDE = () => {
 
     setLanguage(newLanguage);
     setCode(boilerplateCode[newLanguage]);
+    
+    // Update fileName based on new language
+    const extension = getFileExtension(newLanguage);
+    setFileName(`main.${extension}`);
+    
     localStorage.setItem('selectedLanguage', newLanguage);
   };
 
@@ -294,33 +322,52 @@ const IDE = () => {
         availableLanguages={availableLanguages}
       />
       
-      {/* Mobile View Controls */}
-      <div className="lg:hidden flex justify-end px-4 py-2 gap-2">
-        <button
-          onClick={() => document.getElementById('left-panel').scrollIntoView({ behavior: 'smooth' })}
-          className={`px-3 py-1 rounded-md text-sm font-medium ${
-            isDark ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-gray-300'
-          }`}
-        >
-          Editor
-        </button>
-        <button
-          onClick={() => document.getElementById('right-panel').scrollIntoView({ behavior: 'smooth' })}
-          className={`px-3 py-1 rounded-md text-sm font-medium ${
-            isDark ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-gray-300'
-          }`}
-        >
-          Input/Output
-        </button>
-      </div>
-
       {/* Main Container */}
       <div id="ide-container" className="flex-1 flex flex-col lg:flex-row overflow-hidden mt-2 lg:mt-4">
         {/* Code Editor Panel */}
         <div 
           id="left-panel" 
-          className="w-full lg:w-1/2 h-[calc(100vh-12rem)] lg:h-auto snap-start"
+          className="w-full lg:w-1/2 flex flex-col h-[calc(100vh-12rem)] lg:h-auto snap-start"
         >
+          {/* Editor Header with Upload Button */}
+          <div className={`flex items-center justify-between p-2 ${isDark ? 'bg-gray-800' : 'bg-white'} border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+            <div className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              {fileName}
+            </div>
+            <div className="flex items-center">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept=".py,.js,.cpp,.java"
+              />
+              <button
+                onClick={handleChooseFile}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  isDark 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                    : 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <svg 
+                  className="w-4 h-4" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" 
+                  />
+                </svg>
+                Upload File
+              </button>
+            </div>
+          </div>
+
           <CodeEditor 
             code={code} 
             setCode={setCode} 

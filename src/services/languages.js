@@ -1,3 +1,5 @@
+const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY;
+
 // Define our supported languages with their IDs
 const SUPPORTED_LANGUAGES = [
   { id: 54, name: 'C++' },

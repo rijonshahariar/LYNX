@@ -2,9 +2,11 @@ import React from 'react';
 
 const Resizer = ({ isDark }) => {
   const handleMouseDown = (e) => {
-    e.preventDefault();
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    if (window.innerWidth >= 1024) {
+      e.preventDefault();
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
   };
 
   const handleMouseMove = (e) => {
@@ -31,7 +33,7 @@ const Resizer = ({ isDark }) => {
   };
 
   return (
-    <div className="px-2 cursor-col-resize flex items-center justify-center hover:bg-opacity-10 hover:bg-green-500">
+    <div className="px-2 cursor-col-resize flex items-center justify-center hover:bg-opacity-10 hover:bg-green-500 lg:block">
       <div
         className={`w-[5px] h-full transition-colors duration-200 ${
           isDark ? 'bg-gray-700 hover:bg-green-500' : 'bg-gray-200 hover:bg-green-400'

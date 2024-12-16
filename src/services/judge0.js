@@ -1,63 +1,78 @@
-const languageCodeMap = {
-  cpp: 54,
-  python: 92,
-  javascript: 93,
-  java: 91,
-};
-
-const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY;
-const RAPIDAPI_HOST = import.meta.env.VITE_RAPIDAPI_HOST;
+const RAPIDAPI_KEY = 'f743bf2041msh4894c15dcbdbbd6p1dc678jsn4bfff64d2a1d';
 
 async function getSubmission(tokenId) {
-  const url = `https://${RAPIDAPI_HOST}/submissions/${tokenId}?base64_encoded=true&fields=*`;
+  const url = `https://judge0-ce.p.rapidapi.com/submissions/${tokenId}?base64_encoded=true&fields=*`;
   const options = {
     method: "GET",
     headers: {
       "x-rapidapi-key": RAPIDAPI_KEY,
-      "x-rapidapi-host": RAPIDAPI_HOST,
+      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
     },
   };
 
   const response = await fetch(url, options);
-  const result = await response.json();
-  return result;
+  const result = await response.text();
+  return JSON.parse(result);
 }
 
 export async function makeSubmission({ code, language, callback, stdin }) {
-  const url = `https://${RAPIDAPI_HOST}/submissions?base64_encoded=true&wait=false&fields=*`;
+  const url = 'https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false&fields=*';
+  
+  // Prepare the submission data
+  const submissionData = {
+    source_code: btoa(unescape(encodeURIComponent(code))),
+    language_id: parseInt(language),
+    stdin: stdin ? btoa(unescape(encodeURIComponent(stdin))) : '',
+    expected_output: null
+  };
+
   const options = {
     method: 'POST',
     headers: {
       'x-rapidapi-key': RAPIDAPI_KEY,
-      'x-rapidapi-host': RAPIDAPI_HOST,
+      'x-rapidapi-host': "judge0-ce.p.rapidapi.com",
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      language_id: languageCodeMap[language],
-      source_code: btoa(code),
-      stdin: btoa(stdin),
-    }),
+    body: JSON.stringify(submissionData)
   };
 
   try {
     callback({ apiStatus: "loading" });
     const response = await fetch(url, options);
-    const result = await response.json();
-    const tokenId = result.token;
     
-    let statusCode = 1; // in queue
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.text();
+    const data = JSON.parse(result);
+    
+    if (!data.token) {
+      throw new Error('No submission token received');
+    }
+
+    let statusCode = 1;
     let apiSubmissionResult;
-    
-    while (statusCode === 1 || statusCode === 2) {
+    let retries = 0;
+    const maxRetries = 10;
+
+    while ((statusCode === 1 || statusCode === 2) && retries < maxRetries) {
       try {
-        apiSubmissionResult = await getSubmission(tokenId);
-        statusCode = apiSubmissionResult.status.id;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        apiSubmissionResult = await getSubmission(data.token);
+        statusCode = apiSubmissionResult.status?.id || 0;
+        retries++;
       } catch (error) {
-        callback({
-          apiStatus: "error",
-          message: JSON.stringify(error),
-        });
-        return;
+        console.error('Status check error:', error);
+        if (retries >= maxRetries) {
+          callback({
+            apiStatus: "error",
+            message: "Maximum retries reached. Please try again.",
+          });
+          return;
+        }
       }
     }
 
@@ -65,9 +80,10 @@ export async function makeSubmission({ code, language, callback, stdin }) {
       callback({ apiStatus: "success", data: apiSubmissionResult });
     }
   } catch (error) {
+    console.error('Submission error:', error);
     callback({
       apiStatus: "error",
-      message: JSON.stringify(error),
+      message: error.message || 'Failed to execute code',
     });
   }
 } 

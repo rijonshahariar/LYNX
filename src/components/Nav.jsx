@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Nav = ({ isDark, toggleTheme, language, setLanguage, onRun, isRunning, setCode, code, timer }) => {
+const Nav = ({ isDark, toggleTheme, language, setLanguage, onRun, isRunning, setCode, code, timer, availableLanguages }) => {
   const { seconds, isTimerRunning, toggleTimer, resetTimer, handleAnalyzeCode, fileInputRef, handleFileChange, handleChooseFile } = timer;
 
   return (
@@ -71,12 +71,15 @@ const Nav = ({ isDark, toggleTheme, language, setLanguage, onRun, isRunning, set
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium ${isDark ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-gray-300'}`}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium ${
+                isDark ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-gray-300'
+              }`}
             >
-              <option value="python">Python</option>
-              <option value="javascript">JavaScript</option>
-              <option value="cpp">C++</option>
-              <option value="java">Java</option>
+              {availableLanguages.map(lang => (
+                <option key={lang.id} value={lang.id}>
+                  {lang.name}
+                </option>
+              ))}
             </select>
 
             <button

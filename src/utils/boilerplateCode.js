@@ -1,19 +1,5 @@
 export const boilerplateCode = {
-  python: `def main():
-    # Your code here
-    print("Hello, World!")
-
-if __name__ == "__main__":
-    main()`,
-
-  javascript: `function main() {
-    // Your code here
-    console.log("Hello, World!");
-}
-
-main();`,
-
-  cpp: `#include <iostream>
+  '54': `#include <iostream>
 using namespace std;
 
 int main() {
@@ -22,7 +8,21 @@ int main() {
     return 0;
 }`,
 
-  java: `public class Main {
+  '92': `# Your code here
+def main():
+    print("Hello, World!")
+
+if __name__ == "__main__":
+    main()`,
+
+  '93': `// Your code here
+function main() {
+    console.log("Hello, World!");
+}
+
+main();`,
+
+  '91': `public class Main {
     public static void main(String[] args) {
         // Your code here
         System.out.println("Hello, World!");

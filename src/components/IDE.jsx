@@ -8,6 +8,7 @@ import { analyzeCode } from '../services/codeAnalysis';
 import ComplexityModal from './ComplexityModal';
 import Resizer from './Resizer';
 import { boilerplateCode } from '../utils/boilerplateCode';
+import { fetchLanguages } from '../services/languages';
 
 const formatTime = (seconds) => {
   const hours = Math.floor(seconds / 3600);
@@ -18,15 +19,29 @@ const formatTime = (seconds) => {
 
 const IDE = () => {
   const fileInputRef = useRef(null);
+  
+  // Helper function for language name
+  const getLanguageName = (id) => {
+    switch (id) {
+      case '54': return 'cpp';
+      case '92': return 'python';
+      case '93': return 'javascript';
+      case '91': return 'java';
+      default: return 'python';
+    }
+  };
+
   const [code, setCode] = useState(() => {
     const savedCode = localStorage.getItem('savedCode');
-    const savedLanguage = localStorage.getItem('selectedLanguage') || 'python';
-    return savedCode || boilerplateCode[savedLanguage];
+    const savedLanguage = localStorage.getItem('selectedLanguage') || '92'; // default to Python
+    return savedCode || boilerplateCode[getLanguageName(savedLanguage)];
   });
+
   const [language, setLanguage] = useState(() => {
     const savedLanguage = localStorage.getItem('selectedLanguage');
-    return savedLanguage || 'python';
+    return savedLanguage || '92'; // default to Python
   });
+
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
@@ -42,6 +57,23 @@ const IDE = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const intervalRef = useRef(null);
+
+  const [availableLanguages, setAvailableLanguages] = useState([]);
+
+  // Fetch languages on component mount
+  useEffect(() => {
+    const getLanguages = async () => {
+      const languages = await fetchLanguages();
+      setAvailableLanguages(languages);
+      
+      // If no language is selected, set default to Python (92)
+      if (!language) {
+        setLanguage('92');
+        setCode(boilerplateCode['92']);
+      }
+    };
+    getLanguages();
+  }, []);
 
   // Timer effect
   useEffect(() => {
@@ -224,13 +256,16 @@ const IDE = () => {
   };
 
   const handleLanguageChange = (newLanguage) => {
-    if (code && code !== boilerplateCode[language]) {
+    if (code && code !== boilerplateCode[newLanguage]) {
       const confirmChange = window.confirm(
-        'Changing language will reset your code if you haven\'t modified it. Continue?'
+        'Changing language will reset your code. Continue?'
       );
       if (!confirmChange) return;
     }
+
     setLanguage(newLanguage);
+    setCode(boilerplateCode[newLanguage]);
+    localStorage.setItem('selectedLanguage', newLanguage);
   };
 
   const timerProps = {
@@ -256,9 +291,36 @@ const IDE = () => {
         setCode={setCode}
         code={code}
         timer={timerProps}
+        availableLanguages={availableLanguages}
       />
-      <div id="ide-container" className="flex-1 flex flex-col lg:flex-row overflow-hidden mt-4">
-        <div id="left-panel" className="w-1/2 h-[50vh] lg:h-auto">
+      
+      {/* Mobile View Controls */}
+      <div className="lg:hidden flex justify-end px-4 py-2 gap-2">
+        <button
+          onClick={() => document.getElementById('left-panel').scrollIntoView({ behavior: 'smooth' })}
+          className={`px-3 py-1 rounded-md text-sm font-medium ${
+            isDark ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-gray-300'
+          }`}
+        >
+          Editor
+        </button>
+        <button
+          onClick={() => document.getElementById('right-panel').scrollIntoView({ behavior: 'smooth' })}
+          className={`px-3 py-1 rounded-md text-sm font-medium ${
+            isDark ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-gray-300'
+          }`}
+        >
+          Input/Output
+        </button>
+      </div>
+
+      {/* Main Container */}
+      <div id="ide-container" className="flex-1 flex flex-col lg:flex-row overflow-hidden mt-2 lg:mt-4">
+        {/* Code Editor Panel */}
+        <div 
+          id="left-panel" 
+          className="w-full lg:w-1/2 h-[calc(100vh-12rem)] lg:h-auto snap-start"
+        >
           <CodeEditor 
             code={code} 
             setCode={setCode} 
@@ -269,7 +331,11 @@ const IDE = () => {
 
         <Resizer isDark={isDark} />
 
-        <div id="right-panel" className="w-1/2 flex flex-col h-[50vh] lg:h-auto">
+        {/* Input/Output Panel */}
+        <div 
+          id="right-panel" 
+          className="w-full lg:w-1/2 flex flex-col h-[calc(100vh-12rem)] lg:h-auto snap-start"
+        >
           <InputOutput 
             input={input}
             setInput={setInput}

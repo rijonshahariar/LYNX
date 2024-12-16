@@ -34,4 +34,17 @@
 
 .light-scrollbar {
   scrollbar-color: #d1d5db transparent;
+}
+
+/* Enable smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Add snap scrolling for mobile */
+@media (max-width: 1024px) {
+  #ide-container {
+    scroll-snap-type: y mandatory;
+    overflow-y: auto;
+  }
 } 

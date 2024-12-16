@@ -20,6 +20,17 @@ const formatTime = (seconds) => {
 const IDE = () => {
   const fileInputRef = useRef(null);
   
+  // Helper function to get file extension
+  const getFileExtension = (languageId) => {
+    switch (languageId) {
+      case '54': return 'cpp';
+      case '92': return 'py';
+      case '93': return 'js';
+      case '91': return 'java';
+      default: return 'py';
+    }
+  };
+
   // Helper function for language name
   const getLanguageName = (id) => {
     switch (id) {
@@ -31,9 +42,15 @@ const IDE = () => {
     }
   };
 
+  const [fileName, setFileName] = useState(() => {
+    const savedLanguage = localStorage.getItem('selectedLanguage') || '92';
+    const extension = getFileExtension(savedLanguage);
+    return `main.${extension}`;
+  });
+
   const [code, setCode] = useState(() => {
     const savedCode = localStorage.getItem('savedCode');
-    const savedLanguage = localStorage.getItem('selectedLanguage') || '92'; // default to Python
+    const savedLanguage = localStorage.getItem('selectedLanguage') || '92';
     return savedCode || boilerplateCode[getLanguageName(savedLanguage)];
   });
 
@@ -59,9 +76,6 @@ const IDE = () => {
   const intervalRef = useRef(null);
 
   const [availableLanguages, setAvailableLanguages] = useState([]);
-
-  // Add new state for file name
-  const [fileName, setFileName] = useState('main.py'); // Default for Python
 
   // Fetch languages on component mount
   useEffect(() => {
@@ -122,22 +136,12 @@ const IDE = () => {
 
   // Update fileName when language changes
   useEffect(() => {
-    if (!fileName.startsWith('main.')) { // Don't update if user has uploaded a custom file
-      const extension = getFileExtension(language);
+    const savedLanguage = localStorage.getItem('selectedLanguage');
+    if (savedLanguage && !fileName.includes('/')) { // Don't update if it's an uploaded file
+      const extension = getFileExtension(savedLanguage);
       setFileName(`main.${extension}`);
     }
   }, [language]);
-
-  // Helper function to get file extension
-  const getFileExtension = (languageId) => {
-    switch (languageId) {
-      case '54': return 'cpp';
-      case '92': return 'py';
-      case '93': return 'js';
-      case '91': return 'java';
-      default: return 'py';
-    }
-  };
 
   const toggleTheme = () => {
     setIsDark(!isDark);

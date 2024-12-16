@@ -1,21 +1,45 @@
-# WebCode - AI-Enhanced Online Code Editor
+<div align="center">
+  <img src="public/lynx.png" alt="LYNX Code Editor" width="800"/>
+</div>
 
-A modern, lightweight online code editor with AI capabilities for quick coding and execution.
+# LYNX - AI Enhanced Code Editor
 
-## 🚀 Features
+LYNX is a modern, feature-rich online code editor with AI capabilities, designed to make coding more efficient and enjoyable.
 
-- **Code Execution**: Write and run code in Python, JavaScript, C++, and Java
-- **AI Analysis**: Get time and space complexity insights
-- **Smart Editor Features**:
-  - Syntax highlighting
-  - Language-specific templates
-  - Error detection
-  - Split-pane interface
-  
-- **User-Friendly Interface**:
-  - Dark/Light themes
-  - Resizable editor panels
-  - Code session timer
-  - Clean, minimal design
+## Features
 
-[... rest of the description remains similar but removes IDE references ...]
+### Code Editor
+<img src="public/editor.png" alt="Code Editor" width="800"/>
+
+- Syntax highlighting
+- Auto-completion
+- Multiple language support
+- Real-time error detection
+- Code formatting
+
+### AI Analysis
+<img src="public/analysis.png" alt="AI Analysis" width="800"/>
+
+- Code complexity analysis
+- Performance insights
+- Best practices suggestions
+- Security checks
+
+### Input/Output Console
+<img src="public/console.png" alt="Console" width="800"/>
+
+- Interactive console
+- Real-time output
+- Error handling
+- Input testing
+
+## Supported Languages
+
+- Python
+- JavaScript
+- C++
+- Java
+
+## Getting Started
+
+1. Clone the repository
